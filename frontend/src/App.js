@@ -58,7 +58,8 @@ function App() {
         generation_method: generationMethod,
         api_key: apiKey,
       };
-      const response = await fetch('http://localhost:8000/generate-readme/', {
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/generate-readme/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -220,15 +221,15 @@ function App() {
       
       <a 
         href="https://www.buymeacoffee.com/dbaidya811e" 
-        target="_blank" 
-        rel="noopener noreferrer"
+          target="_blank"
+          rel="noopener noreferrer"
         className="buy-me-coffee-link"
-      >
+        >
         <img 
           src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
           alt="Buy Me A Coffee" 
         />
-      </a>
+        </a>
     </div>
   );
 }
