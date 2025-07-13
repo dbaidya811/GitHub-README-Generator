@@ -1163,16 +1163,15 @@ async def generate_readme(request: RepoRequest):
 ## 📊 Languages Used
 
 """
-        # --- Languages Used section ---
-        github_username = request.github_user or ""
-        if github_username:
-            readme_content += f"""## 📊 Languages Used
-
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username={github_username}&layout=compact&theme=radical&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
-
-"""
+        # --- Languages Used section (project-based, not GitHub stats) ---
+        if language_stats:
+            for lang, percent in language_stats:
+                # Use shields.io badge for each language
+                badge_url = f"https://img.shields.io/badge/{lang.replace(' ', '%20')}-{percent}%25-blue?style=for-the-badge"
+                readme_content += f"![{lang}]({badge_url}) "
+            readme_content += "\n"
         else:
-            readme_content += "---"
+            readme_content += "No significant languages detected.\n"
 
         readme_content += f"""
 
