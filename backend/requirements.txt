@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-gitpython
-python-multipart
-requests
-openai 
