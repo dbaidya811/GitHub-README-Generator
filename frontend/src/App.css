@@ -57,12 +57,13 @@ body {
   margin: 40px auto;
   padding: 30px;
   border-radius: 8px;
-  text-align: center;
+  text-align: left;
 }
 
 h2 {
   color: var(--header-color);
   margin-bottom: 25px;
+  text-align: left;
 }
 
 .repo-form {
@@ -134,13 +135,15 @@ h2 {
 
 .readme-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 10px;
+  gap: 10px;
 }
 
 .readme-header h3 {
   margin: 0;
+  text-align: left;
 }
 
 .copy-button {
@@ -209,20 +212,6 @@ h2 {
   font-size: 14px;
 }
 
-.settings-icon {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.2s;
-}
-
-.settings-icon:hover {
-  color: #000;
-}
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -279,61 +268,185 @@ h2 {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.preview-button {
+  background-color: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+  color: var(--button-secondary-text);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.preview-button:hover {
+  background-color: var(--button-secondary-hover-bg);
+}
+
 /* --- Mobile Responsiveness --- */
 @media (max-width: 600px) {
   .App {
-    margin: 20px 10px;
-    padding: 20px;
+    margin: 10px;
+    padding: 15px;
+    max-width: 100%;
   }
 
   h2 {
-    font-size: 24px;
-}
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 
   .repo-form {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
   }
 
   .repo-input {
     width: 100%;
-    box-sizing: border-box; /* Ensures padding doesn't break layout */
+    box-sizing: border-box;
+    font-size: 14px;
+    padding: 10px;
   }
   
   .generate-button {
     width: 100%;
     box-sizing: border-box;
-}
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .optional-section {
+    padding: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .optional-section h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
 
   .optional-inputs {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 15px;
   }
 
-  .settings-icon {
-    top: 15px;
-    right: 15px;
+  .optional-input-group label {
+    font-size: 14px;
+  }
+
+  .optional-input {
+    font-size: 14px;
+    padding: 8px;
   }
 
   .modal-content {
-    width: 90%;
+    width: 95%;
+    padding: 20px;
+    margin: 10px;
   }
 
   .generation-toggle {
-    transform: scale(0.9);
+    transform: scale(0.85);
+    margin: 15px 0;
+  }
+
+  .method-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .readme-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .readme-header h3 {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .copy-button, .preview-button {
+    width: 100%;
+    margin: 0;
+    font-size: 14px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+  }
+
+  .readme-textarea {
+    font-size: 12px;
+    min-height: 250px;
+    padding: 10px;
+  }
+
+  .theme-toggle-button {
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    z-index: 100;
   }
 
   .buy-me-coffee-link {
-    bottom: 15px;
-    right: 15px;
+    bottom: 8px;
+    right: 8px;
   }
 
   .buy-me-coffee-link img {
-    height: 40px; /* Making the button smaller on mobile */
+    height: 30px;
   }
 
   .buy-me-coffee-link:hover {
-    transform: none; /* Disable hover effect on mobile */
+    transform: none;
+  }
+
+  .error-message {
+    font-size: 14px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .App {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .repo-input, .generate-button {
+    font-size: 13px;
+  }
+
+  .optional-section h3 {
+    font-size: 15px;
+  }
+
+  .readme-header h3 {
+    font-size: 15px;
+  }
+
+  .copy-button, .preview-button {
+    font-size: 13px;
+  }
+
+  .theme-toggle-button {
+    top: 8px;
+    right: 8px;
+    font-size: 18px;
+  }
+
+  .buy-me-coffee-link {
+    bottom: 5px;
+    right: 5px;
+  }
+
+  .buy-me-coffee-link img {
+    height: 25px;
   }
 }
 

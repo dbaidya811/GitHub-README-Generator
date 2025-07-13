@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { FiSettings, FiSun, FiMoon } from 'react-icons/fi';
+import { FiSun, FiMoon } from 'react-icons/fi';
+import ReactMarkdown from 'react-markdown';
 
 function App() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -8,44 +9,24 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isCopied, setIsCopied] = useState(false);
+  const [isDownloaded, setIsDownloaded] = useState(false);
 
   // Optional fields
   const [buyMeCoffeeUser, setBuyMeCoffeeUser] = useState('');
   const [twitterUser, setTwitterUser] = useState('');
   const [linkedinUser, setLinkedinUser] = useState('');
 
-  // AI Feature State
-  const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [tempApiKey, setTempApiKey] = useState('');
-  const [generationMethod, setGenerationMethod] = useState('template'); // 'template' or 'ai'
-
   const [theme, setTheme] = useState('light');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
-    const storedApiKey = localStorage.getItem('openai_api_key');
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
-      setTempApiKey(storedApiKey);
-    }
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
     document.body.className = savedTheme + '-mode';
   }, []);
 
-  const handleSaveSettings = () => {
-    setApiKey(tempApiKey);
-    localStorage.setItem('openai_api_key', tempApiKey);
-    setShowSettings(false);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (generationMethod === 'ai' && !apiKey) {
-      setError('Please set your OpenAI API key in the settings.');
-      setShowSettings(true);
-      return;
-    }
     setLoading(true);
     setError('');
     setReadme('');
@@ -55,24 +36,46 @@ function App() {
         buy_me_a_coffee_user: buyMeCoffeeUser,
         twitter_user: twitterUser,
         linkedin_user: linkedinUser,
-        generation_method: generationMethod,
-        api_key: apiKey,
+        generation_method: 'template',
       };
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/generate-readme/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) throw new Error('Failed to generate README. Check the repo URL and backend server.');
+      // Add timeout logic
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds
+      let response;
+      try {
+        response = await fetch(`${apiUrl}/generate-readme/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          setError('Request timed out or server not responding.');
+        } else {
+          setError('Network error: ' + err.message);
+        }
+        setLoading(false);
+        clearTimeout(timeoutId);
+        return;
+      }
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        setError('Failed to generate README. Check the repo URL and backend server.');
+        setLoading(false);
+        return;
+      }
       const data = await response.json();
-      if (data.readme.startsWith('Error:')) {
+      if (data.readme && data.readme.startsWith('Error:')) {
         setError(data.readme);
-      } else {
+      } else if (data.readme) {
         setReadme(data.readme);
+      } else {
+        setError('Unexpected server response.');
       }
     } catch (err) {
-      setError(err.message);
+      setError('Unexpected error: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -87,6 +90,20 @@ function App() {
     });
   };
 
+  const handleDownload = () => {
+    const blob = new Blob([readme], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'README.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setIsDownloaded(true);
+    setTimeout(() => setIsDownloaded(false), 2000);
+  };
+
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
@@ -96,51 +113,11 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={toggleTheme} className="theme-toggle-button">
+      <button onClick={toggleTheme} className="theme-toggle-button" aria-label="Toggle theme">
         {theme === 'light' ? <FiMoon /> : <FiSun />}
       </button>
-      <FiSettings className="settings-icon" onClick={() => setShowSettings(true)} />
       
-      {showSettings && (
-        <div className="modal-overlay" onClick={() => setShowSettings(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <h3>Settings</h3>
-            <div className="optional-input-group">
-              <label htmlFor="apiKey">OpenAI API Key</label>
-              <input
-                type="password"
-                id="apiKey"
-                className="optional-input"
-                placeholder="sk-..."
-                value={tempApiKey}
-                onChange={e => setTempApiKey(e.target.value)}
-              />
-            </div>
-            <button className="generate-button" onClick={handleSaveSettings} style={{marginTop: '15px'}}>
-              Save
-            </button>
-          </div>
-        </div>
-      )}
-
       <h2>Auto README Generator</h2>
-
-      <div className="generation-toggle">
-        <button
-          type="button"
-          className={`method-button ${generationMethod === 'template' ? 'active' : ''}`}
-          onClick={() => setGenerationMethod('template')}
-        >
-          Template
-        </button>
-        <button
-          type="button"
-          className={`method-button ${generationMethod === 'ai' ? 'active' : ''}`}
-          onClick={() => setGenerationMethod('ai')}
-        >
-          AI (GPT)
-        </button>
-      </div>
 
       <form onSubmit={handleSubmit}>
         <div className="repo-form">
@@ -152,7 +129,7 @@ function App() {
             onChange={e => setRepoUrl(e.target.value)}
             required
           />
-          <button type="submit" className="generate-button" disabled={loading}>
+          <button type="submit" className="generate-button" disabled={loading} aria-label="Generate README">
             {loading ? 'Generating...' : 'Generate'}
           </button>
         </div>
@@ -206,8 +183,16 @@ function App() {
               className={`copy-button ${isCopied ? 'copied' : ''}`}
               onClick={handleCopy}
               disabled={isCopied}
+              aria-label="Copy README"
             >
               {isCopied ? 'Copied!' : 'Copy'}
+            </button>
+            <button
+              className="preview-button"
+              onClick={() => setShowPreview(true)}
+              aria-label="Preview README"
+            >
+              Preview
             </button>
           </div>
           <textarea
@@ -216,6 +201,19 @@ function App() {
             readOnly
             rows={20}
           />
+        </div>
+      )}
+      {showPreview && (
+        <div className="modal-overlay" onClick={() => setShowPreview(false)}>
+          <div className={`modal-content markdown-body ${theme}-mode`} style={{ maxWidth: '900px', maxHeight: '85vh', overflowY: 'auto', background: theme === 'dark' ? '#222' : '#fff' }} onClick={e => e.stopPropagation()}>
+            <h3>README Preview</h3>
+            <div style={{ padding: '1em', borderRadius: '8px', minHeight: '200px' }}>
+              <ReactMarkdown>{readme}</ReactMarkdown>
+            </div>
+            <button className="generate-button" style={{ marginTop: '15px' }} onClick={() => setShowPreview(false)} aria-label="Close Preview">
+              Close Preview
+            </button>
+          </div>
         </div>
       )}
       
@@ -230,6 +228,7 @@ function App() {
           alt="Buy Me A Coffee" 
         />
         </a>
+      {isDownloaded && <div className="success-message">README.md downloaded!</div>}
     </div>
   );
 }
