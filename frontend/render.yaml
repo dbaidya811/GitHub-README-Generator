@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: autoreadme-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: chmod +x build.sh && ./build.sh
+    staticPublishPath: ./build
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0 
