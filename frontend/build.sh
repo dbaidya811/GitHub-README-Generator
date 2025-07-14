@@ -1,6 +1,13 @@
-#!/usr/bin/env bash
-# exit on error
-set -o errexit
- 
+#!/bin/bash
+set -e
+
+echo "Installing dependencies..."
 npm install
-npm run build 
+
+echo "Setting permissions..."
+chmod +x node_modules/.bin/react-scripts
+
+echo "Building the application..."
+npm run build
+
+echo "Build completed successfully!" 
