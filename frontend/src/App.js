@@ -90,19 +90,19 @@ function App() {
     });
   };
 
-  // const handleDownload = () => {
-  //   const blob = new Blob([readme], { type: 'text/markdown' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'README.md';
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  //   setIsDownloaded(true);
-  //   setTimeout(() => setIsDownloaded(false), 2000);
-  // };
+  const handleDownload = () => {
+    const blob = new Blob([readme], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'README.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setIsDownloaded(true);
+    setTimeout(() => setIsDownloaded(false), 2000);
+  };
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
