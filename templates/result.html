@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="bi bi-file-earmark-text"></i> Generated README
+                <small class="text-muted">{{ repo_data.full_name }}</small>
+            </h2>
+            <div>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+                <button class="btn btn-primary" onclick="copyToClipboard('readme-content')" 
+                        data-bs-toggle="tooltip" title="Copy to clipboard">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
+                <a href="data:text/markdown;charset=utf-8,{{ readme_content|urlencode }}" 
+                   download="README.md" class="btn btn-success">
+                    <i class="bi bi-download"></i> Download
+                </a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <ul class="nav nav-tabs card-header-tabs" id="readmeTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="preview-tab" data-bs-toggle="tab" 
+                                data-bs-target="#preview" type="button" role="tab" aria-controls="preview" 
+                                aria-selected="true">
+                            <i class="bi bi-eye"></i> Preview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="markdown-tab" data-bs-toggle="tab" 
+                                data-bs-target="#markdown" type="button" role="tab" 
+                                aria-controls="markdown" aria-selected="false">
+                            <i class="bi bi-markdown"></i> Markdown
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="info-tab" data-bs-toggle="tab" 
+                                data-bs-target="#info" type="button" role="tab" 
+                                aria-controls="info" aria-selected="false">
+                            <i class="bi bi-info-circle"></i> Repository Info
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body p-0">
+                <div class="tab-content" id="readmeTabsContent">
+                    <!-- Preview Tab -->
+                    <div class="tab-pane fade show active" id="preview" role="tabpanel" aria-labelledby="preview-tab">
+                        <div class="p-4 readme-preview">
+                            {{ readme_content|safe }}
+                        </div>
+                    </div>
+                    
+                    <!-- Markdown Tab -->
+                    <div class="tab-pane fade" id="markdown" role="tabpanel" aria-labelledby="markdown-tab">
+                        <div class="p-3">
+                            <pre id="readme-content" class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ readme_content }}</pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Repository Info Tab -->
+                    <div class="tab-pane fade p-4" id="info" role="tabpanel" aria-labelledby="info-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Repository Details</h4>
+                                <ul class="list-group mb-4">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Name</span>
+                                        <span class="badge bg-primary rounded-pill">{{ repo_data.name }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Owner</span>
+                                        <span>{{ repo_data.full_name.split('/')[0] }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Language</span>
+                                        <span class="badge bg-info text-dark">{{ repo_data.language or 'N/A' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Stars</span>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-star-fill"></i> {{ repo_data.stargazers_count }}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Forks</span>
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-diagram-2"></i> {{ repo_data.forks_count }}
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Open Issues</span>
+                                        <span class="badge bg-danger">{{ repo_data.open_issues_count }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>License</span>
+                                        <span>{{ repo_data.license or 'N/A' }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Created</span>
+                                        <span>{{ repo_data.created_at.strftime('%Y-%m-%d') }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Last Updated</span>
+                                        <span>{{ repo_data.updated_at.strftime('%Y-%m-%d') }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Top Languages</h4>
+                                <div class="mb-4">
+                                    {% if repo_data.languages %}
+                                        {% set total = repo_data.languages.values()|sum %}
+                                        <div class="progress mb-2 language-progress">
+                                            {% for lang, bytes in repo_data.languages.items() %}
+                                                {% set percent = (bytes / total * 100)|round(1) %}
+                                                <div class="progress-bar" 
+                                                     role="progressbar" 
+                                                     data-percent="{{ percent }}" 
+                                                     data-lang="{{ lang }}"
+                                                     aria-valuenow="{{ percent }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ lang }} ({{ percent }}%)
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="d-flex flex-wrap">
+                                            {% for lang in repo_data.languages %}
+                                                <span class="badge bg-light text-dark me-2 mb-2">
+                                                    {{ lang }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted">No language data available</p>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if repo_data.topics %}
+                                    <h4>Topics</h4>
+                                    <div class="mb-4">
+                                        {% for topic in repo_data.topics %}
+                                            <a href="https://github.com/topics/{{ topic }}" 
+                                               class="btn btn-sm btn-outline-secondary me-1 mb-1" 
+                                               target="_blank">
+                                                #{{ topic }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                
+                                {% if repo_data.contributors %}
+                                    <h4>Top Contributors</h4>
+                                    <div class="d-flex flex-wrap">
+                                        {% for contributor in repo_data.contributors %}
+                                            <a href="{{ contributor.url }}" 
+                                               class="me-2 mb-2"
+                                               target="_blank"
+                                               data-bs-toggle="tooltip" 
+                                               title="{{ contributor.login }} ({{ contributor.contributions }} contributions)">
+                                                <img src="https://github.com/{{ contributor.login }}.png?size=40" 
+                                                     class="rounded-circle" 
+                                                     width="40" 
+                                                     height="40" 
+                                                     alt="{{ contributor.login }}">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <h5><i class="bi bi-lightbulb"></i> Pro Tips</h5>
+            <ul class="mb-0">
+                <li>Review and customize the generated README before using it in your project.</li>
+                <li>Add screenshots or gifs to make your README more engaging.</li>
+                <li>Update the features section with the actual features of your project.</li>
+                <li>Consider adding a section for installation and setup instructions.</li>
+                <li>Don't forget to update the license information if needed.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

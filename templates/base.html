@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub README Generator</title>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.ico" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .github-card {
+            transition: transform 0.2s;
+        }
+        .github-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .btn-github {
+            background-color: #24292e;
+            color: white;
+        }
+        .btn-github:hover {
+            background-color: #1b1f23;
+            color: white;
+        }
+        .readme-preview {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        
+        /* Language progress bar styles */
+        .language-progress {
+            height: 20px;
+        }
+        
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-github me-2"></i>GitHub README Generator
+            </a>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">© 2023 GitHub README Generator | Made with <i class="bi bi-heart-fill text-danger"></i> by You</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Enable tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize progress bars
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up tooltips for progress bars
+            const progressBars = document.querySelectorAll('.progress-bar[data-percent]');
+            progressBars.forEach(bar => {
+                const percent = bar.getAttribute('data-percent');
+                const lang = bar.getAttribute('data-lang');
+                bar.style.width = percent + '%';
+                bar.setAttribute('title', `${lang}: ${percent}%`);
+                
+                // Initialize tooltip for this bar
+                new bootstrap.Tooltip(bar, {
+                    trigger: 'hover'
+                });
+            });
+        });
+
+        // Copy to clipboard functionality
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                // Show tooltip or alert that text was copied
+                const tooltip = new bootstrap.Tooltip(element, {
+                    title: 'Copied!',
+                    trigger: 'manual'
+                });
+                tooltip.show();
+                setTimeout(() => tooltip.hide(), 1000);
+            });
+        }
+    </script>
+</body>
+</html>

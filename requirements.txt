@@ -1,0 +1,7 @@
+requests==2.31.0
+python-dotenv==1.0.0
+PyGithub==2.1.1
+markdown2==2.4.10
+Flask==2.3.3
+Flask-WTF==1.2.1
+python-slugify==8.0.1

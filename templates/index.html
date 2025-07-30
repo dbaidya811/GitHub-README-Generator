@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-5">
+                <h1 class="text-center mb-4">GitHub README Generator</h1>
+                <p class="text-center text-muted mb-4">
+                    Generate beautiful and professional README files for your GitHub repositories automatically.
+                </p>
+                
+                <form method="POST" action="{{ url_for('index') }}" class="mb-4">
+                    <h5 class="mb-3">Your Information</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="user_name" class="form-label">Your Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="user_name" name="user_name" 
+                                       placeholder="John Doe" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide your name.
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="user_email" class="form-label">Your Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="user_email" name="user_email" 
+                                       placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="portfolio_url" class="form-label">Portfolio/Website URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                            <input type="url" class="form-control" id="portfolio_url" name="portfolio_url" 
+                                   placeholder="https://yourportfolio.com">
+                        </div>
+                        <div class="form-text">
+                            Optional - Your personal website or portfolio
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3">Repository Information</h5>
+                    <div class="mb-3">
+                        <label for="repo_url" class="form-label">GitHub Repository URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-github"></i>
+                            </span>
+                            <input type="url" class="form-control form-control-lg" id="repo_url" 
+                                   name="repo_url" placeholder="https://github.com/username/repository" required>
+                        </div>
+                        <div class="invalid-feedback">
+                            Please provide a valid GitHub repository URL.
+                        </div>
+                        <div class="form-text">
+                            Enter the full URL of the GitHub repository (e.g., https://github.com/username/repository)
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="advancedOptions" data-bs-toggle="collapse" data-bs-target="#advancedOptionsCollapse">
+                            <label class="form-check-label" for="advancedOptions">
+                                Advanced Options
+                            </label>
+                        </div>
+                        <div class="collapse mt-3" id="advancedOptionsCollapse">
+                            <div class="card card-body">
+                                <div class="mb-3">
+                                    <label for="github_token" class="form-label">GitHub Personal Access Token (Optional)</label>
+                                    <input type="password" class="form-control" id="github_token" name="github_token" 
+                                           placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                                    <div class="form-text">
+                                        <small>Using a token increases rate limits. 
+                                            <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token" 
+                                               target="_blank" class="text-decoration-none">
+                                                How to get a token
+                                            </a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-magic me-2"></i>Generate README
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="mt-5">
+                    <h5 class="text-center mb-4">How it works</h5>
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-4">
+                            <div class="p-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-link-45deg fs-1 text-primary"></i>
+                                </div>
+                                <h5>1. Enter Repository URL</h5>
+                                <p class="text-muted">Paste the URL of any public GitHub repository</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="p-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-robot fs-1 text-primary"></i>
+                                </div>
+                                <h5>2. We Analyze</h5>
+                                <p class="text-muted">Our system analyzes the repository structure and content</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="p-3">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-file-earmark-text fs-1 text-primary"></i>
+                                </div>
+                                <h5>3. Get Your README</h5>
+                                <p class="text-muted">Download or copy the generated README file</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
