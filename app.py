@@ -142,37 +142,55 @@ def login():
     if not GITHUB_CLIENT_ID:
         flash('GitHub OAuth not configured. Set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET.', 'error')
         return redirect(url_for('index'))
+    import secrets
+    state = secrets.token_urlsafe(24)
+    session['oauth_state'] = state
+    # Build authorize URL
     authorize_url = (
         'https://github.com/login/oauth/authorize'
         f'?client_id={GITHUB_CLIENT_ID}'
         '&scope=repo%20read:user%20user:email'
+        f'&state={state}'
     )
+    if GITHUB_OAUTH_CALLBACK:
+        from urllib.parse import quote
+        authorize_url += f'&redirect_uri={quote(GITHUB_OAUTH_CALLBACK, safe="")}'
     return redirect(authorize_url)
 
 @app.route('/callback')
 def oauth_callback():
     code = request.args.get('code')
+    state = request.args.get('state')
     if not code:
         flash('Login failed: missing code.', 'error')
         return redirect(url_for('index'))
+    # Validate state to prevent CSRF
+    expected_state = session.pop('oauth_state', None)
+    if not expected_state or state != expected_state:
+        flash('Login failed: invalid state.', 'error')
+        return redirect(url_for('index'))
     try:
         # Exchange code for access token
+        payload = {
+            'client_id': GITHUB_CLIENT_ID,
+            'client_secret': GITHUB_CLIENT_SECRET,
+            'code': code,
+        }
+        if GITHUB_OAUTH_CALLBACK:
+            payload['redirect_uri'] = GITHUB_OAUTH_CALLBACK
         token_resp = requests.post(
             'https://github.com/login/oauth/access_token',
             headers={'Accept': 'application/json'},
-            data={
-                'client_id': GITHUB_CLIENT_ID,
-                'client_secret': GITHUB_CLIENT_SECRET,
-                'code': code,
-                'redirect_uri': GITHUB_OAUTH_CALLBACK or None,
-            },
+            data=payload,
             timeout=15
         )
         token_resp.raise_for_status()
         token_json = token_resp.json()
         access_token = token_json.get('access_token')
         if not access_token:
-            raise RuntimeError('No access token returned from GitHub')
+            # Try to surface GitHub error
+            err = token_json.get('error_description') or token_json.get('error') or 'No access token returned from GitHub'
+            raise RuntimeError(err)
 
         # Fetch user
         user_resp = requests.get(
