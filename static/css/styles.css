@@ -1,0 +1,185 @@
+/* Modern theme for GitHub README Generator */
+:root {
+  --bg: #0f172a; /* slate-900 */
+  --bg-soft: #0b1223;
+  --card: #111827; /* gray-900 */
+  --card-border: rgba(255,255,255,0.06);
+  --text: #e5e7eb; /* gray-200 */
+  --muted: #9ca3af; /* gray-400 */
+  --primary: #6366f1; /* indigo-500 */
+  --primary-600: #4f46e5;
+  --primary-700: #4338ca;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #06b6d4;
+  --surface: rgba(255,255,255,0.03);
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --radius: 14px;
+  --glass: rgba(255,255,255,0.10);
+  --glass-strong: rgba(255,255,255,0.14);
+  --blur: 12px;
+}
+
+/* Layout */
+body {
+  background: radial-gradient(1000px 600px at 10% 10%, rgba(99,102,241,0.12), transparent 60%),
+              radial-gradient(800px 500px at 90% 20%, rgba(6,182,212,0.12), transparent 55%),
+              radial-gradient(900px 600px at 50% 100%, rgba(34,197,94,0.10), transparent 60%),
+              var(--bg);
+  color: var(--text);
+}
+
+.navbar {
+  backdrop-filter: saturate(1.2) blur(var(--blur));
+  background: linear-gradient(180deg, rgba(15,23,42,0.76), rgba(15,23,42,0.52)) !important;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.navbar .navbar-brand {
+  color: var(--text) !important;
+}
+
+footer.bg-light {
+  background: var(--surface) !important;
+  border-top: 1px solid var(--card-border);
+  color: var(--muted);
+}
+
+.container .card,
+.card.shadow-sm {
+  background: linear-gradient(180deg, rgba(17,24,39,0.62), rgba(17,24,39,0.48));
+  backdrop-filter: blur(var(--blur)) saturate(1.1);
+  border: 1px solid var(--glass-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.card-header.bg-light {
+  background: rgba(255,255,255,0.06) !important;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  border: 1px solid rgba(99,102,241,0.4);
+}
+.btn-primary:hover { background: linear-gradient(180deg, var(--primary-600), var(--primary-700)); }
+
+.btn-success { background: linear-gradient(180deg, #22c55e, #16a34a); border: 1px solid rgba(34,197,94,0.4); }
+.btn-outline-secondary { color: var(--text); border-color: var(--card-border); }
+.btn-outline-secondary:hover { background: var(--surface); border-color: var(--muted); }
+
+/* Custom GitHub-styled button */
+.btn-github { background-color: #24292e; color: #fff; }
+.btn-github:hover { background-color: #1b1f23; color: #fff; }
+
+/* Inputs */
+.form-control, .input-group-text, .form-select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+}
+.form-control[readonly], .form-select[disabled] {
+  color: var(--text);
+  opacity: 1;
+}
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 .2rem rgba(99,102,241,0.15); }
+.form-text, .text-muted { color: var(--muted) !important; }
+
+/* Tabs */
+.nav-tabs .nav-link {
+  color: var(--muted);
+}
+.nav-tabs .nav-link.active {
+  color: var(--text);
+  background: transparent;
+  border-color: var(--card-border) var(--card-border) transparent;
+}
+
+/* Readme preview / markdown */
+.readme-preview {
+  max-height: 70vh;
+  overflow: auto;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(calc(var(--blur) - 2px));
+}
+.readme-preview h1, .readme-preview h2, .readme-preview h3 {
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  padding-bottom: .35rem;
+  margin-top: 1.25rem;
+}
+.readme-preview pre, .readme-preview code {
+  background: #0b1223;
+  color: #e2e8f0;
+  border-radius: 10px;
+}
+
+/* Code block used in Markdown tab */
+.code-block {
+  background: #0b1223 !important;
+  color: #e2e8f0;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  white-space: pre-wrap; /* moved from inline */
+}
+
+/* Progress bars for languages */
+.language-progress { height: 20px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.06); }
+.progress-bar {
+  background-image: linear-gradient(90deg, var(--primary), var(--info));
+  transition: width 0.6s ease;
+}
+
+/* Feature icon circle used on index cards */
+.feature-icon {
+  width: 84px; height: 84px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+}
+
+/* Hover elevation effect for cards */
+.github-card, .card {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.github-card:hover, .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.45); }
+
+/* Alerts */
+.alert-info { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.35); color: #a5f3fc; }
+.alert-danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.35); color: #fecaca; }
+
+/* Utilities */
+.hr-muted { border-color: var(--card-border); opacity: 1; }
+
+/* Footer */
+footer p { color: var(--muted); }
+
+/* Glassmorphism for modal and dropdowns */
+.modal-content {
+  background: linear-gradient(180deg, rgba(17,24,39,0.50), rgba(17,24,39,0.40));
+  backdrop-filter: blur(var(--blur)) saturate(1.1);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.1);
+  border: 1px solid var(--glass-strong);
+  border-radius: var(--radius);
+  color: var(--text);
+}
+.modal-header, .modal-footer { border-color: var(--card-border); }
+.modal-backdrop.show { opacity: .35; }
+.dropdown-menu {
+  background: linear-gradient(180deg, rgba(17,24,39,0.60), rgba(17,24,39,0.46));
+  backdrop-filter: blur(var(--blur)) saturate(1.1);
+  border: 1px solid var(--glass-strong);
+  color: var(--text);
+}
+.dropdown-item { color: var(--text); }
+.dropdown-item:hover { background: rgba(255,255,255,0.06); }
+
+/* Button variants polish */
+.btn-warning { background: linear-gradient(180deg, #f59e0b, #d97706); border: 1px solid rgba(245,158,11,0.4); color: #111827; }
+.btn-warning:hover { background: linear-gradient(180deg, #d97706, #b45309); }

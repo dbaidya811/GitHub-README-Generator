@@ -12,14 +12,17 @@
                 <a href="{{ url_for('index') }}" class="btn btn-outline-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
-                <button class="btn btn-primary" onclick="copyToClipboard('readme-content')" 
+                <button class="btn btn-primary me-2" onclick="copyToClipboard('readme-content')" 
                         data-bs-toggle="tooltip" title="Copy to clipboard">
                     <i class="bi bi-clipboard"></i> Copy
                 </button>
-                <a href="data:text/markdown;charset=utf-8,{{ readme_content|urlencode }}" 
-                   download="README.md" class="btn btn-success">
+                <a href="data:text/markdown;charset=utf-8,{{ readme_markdown|urlencode }}" 
+                   download="README.md" class="btn btn-success me-2">
                     <i class="bi bi-download"></i> Download
                 </a>
+                <button id="publishBtn" class="btn btn-warning" data-full-name="{{ repo_data.full_name }}" data-default-branch="{{ repo_data.default_branch }}">
+                    <i class="bi bi-upload"></i> Publish
+                </button>
             </div>
         </div>
 
@@ -54,14 +57,14 @@
                     <!-- Preview Tab -->
                     <div class="tab-pane fade show active" id="preview" role="tabpanel" aria-labelledby="preview-tab">
                         <div class="p-4 readme-preview">
-                            {{ readme_content|safe }}
+                            {{ readme_html|safe }}
                         </div>
                     </div>
                     
                     <!-- Markdown Tab -->
                     <div class="tab-pane fade" id="markdown" role="tabpanel" aria-labelledby="markdown-tab">
                         <div class="p-3">
-                            <pre id="readme-content" class="bg-light p-3 rounded" style="white-space: pre-wrap;">{{ readme_content }}</pre>
+                            <pre id="readme-content" class="code-block">{{ readme_markdown }}</pre>
                         </div>
                     </div>
                     
@@ -78,6 +81,20 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Owner</span>
                                         <span>{{ repo_data.full_name.split('/')[0] }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Description</span>
+                                        <span class="text-end" style="max-width: 65%; white-space: normal;">{{ repo_data.description }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Topics</span>
+                                        <span class="text-end" style="max-width: 65%; white-space: normal;">
+                                            {% if repo_data.topics %}
+                                                {{ repo_data.topics|join(' ') }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Language</span>
@@ -193,5 +210,39 @@
             </ul>
         </div>
     </div>
+</div>
+
+<!-- Publish Modal -->
+<div class="modal fade" id="publishModal" tabindex="-1" aria-labelledby="publishModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="publishModalLabel"><i class="bi bi-upload me-1"></i> Publish README</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Repository</label>
+          <input type="text" class="form-control" id="publishRepo" value="{{ repo_data.full_name }}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Branch</label>
+          <input type="text" class="form-control" id="publishBranch" value="{{ repo_data.default_branch }}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="publishMessage">Commit message</label>
+          <input type="text" class="form-control" id="publishMessage" value="chore: update README via README Generator">
+        </div>
+        <div class="form-text">The README will be written to <code>README.md</code> on the default branch.</div>
+        <div id="publishError" class="alert alert-danger d-none mt-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="publishConfirmBtn" class="btn btn-warning">
+          <i class="bi bi-upload"></i> Publish
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
